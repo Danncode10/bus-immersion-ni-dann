@@ -8,7 +8,7 @@ import AdminSeatModal from "./AdminSeatModal";
 import AdminVacantModal from "./AdminVacantModal";
 import { supabase } from "../lib/supabase";
 import { Session } from "@supabase/supabase-js";
-import { ShieldCheck, RefreshCw } from "lucide-react";
+import { ShieldCheck, RefreshCw, Github } from "lucide-react";
 import Link from "next/link";
 
 interface Bus {
@@ -281,14 +281,15 @@ export default function BusTabs() {
       )}
 
       <footer className="page-footer">
-        <span className="footer-text">build by </span>
+        <span className="footer-text">build by</span>
         <a 
-          href="https://www.instagram.com/dann.builds?igsh=MXc1OHM5ZXZ3Nm01OQ%3D%3D&utm_source=qr" 
+          href="https://github.com/Danncode10" 
           target="_blank" 
           rel="noopener noreferrer"
           className="footer-link"
         >
-          @dann.builds
+          <Github size={14} />
+          <span>@dann.builds</span>
         </a>
       </footer>
     </div>
