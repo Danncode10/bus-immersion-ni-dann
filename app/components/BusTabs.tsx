@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import "./BusTabs.css";
 import BusSeatingChart, { BusRow, Seat } from "./BusSeatingChart";
 import SeatModal from "./SeatModal";
+import AdminSeatModal from "./AdminSeatModal";
 import { supabase } from "../lib/supabase";
 import { Session } from "@supabase/supabase-js";
 import { ShieldCheck } from "lucide-react";
@@ -22,9 +23,12 @@ export default function BusTabs() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
 
-  // Modal State
+  // User Modal State
   const [modalSeat, setModalSeat] = useState<Seat | null>(null);
   const [modalType, setModalType] = useState<"request" | "view" | null>(null);
+
+  // Admin Modal State
+  const [adminModalSeat, setAdminModalSeat] = useState<Seat | null>(null);
 
   // 1. Auth & Buses Fetch
   useEffect(() => {
@@ -99,7 +103,7 @@ export default function BusTabs() {
 
   // 3. User Actions
   const handleSeatClick = (seat: Seat) => {
-    if (session) return; // Admins use direct buttons
+    if (session) return; 
     setModalSeat(seat);
     setModalType(seat.status === "vacant" ? "request" : "view");
   };
@@ -119,14 +123,24 @@ export default function BusTabs() {
   };
 
   // 4. Admin Actions
-  const handleAdminAction = async (seat: Seat, action: "approve" | "reject" | "remove") => {
+  const handleAdminEdit = (seat: Seat) => {
+    setAdminModalSeat(seat);
+  };
+
+  const handleAdminUpdate = async (updateData: any) => {
+    if (!adminModalSeat) return;
     setIsUpdating(true);
-    let updateData = {};
-    if (action === "approve") updateData = { status: "occupied", passenger_name: seat.requester_name, requester_name: null };
-    else if (action === "reject") updateData = { status: "vacant", requester_name: null };
-    else if (action === "remove") updateData = { status: "vacant", passenger_name: null };
     
-    await supabase.from("seats").update(updateData).eq("id", seat.id);
+    const { error } = await supabase.from("seats")
+      .update(updateData)
+      .eq("id", adminModalSeat.id);
+    
+    if (error) {
+      alert("Failed to update seat: " + error.message);
+    } else {
+      if (activeId) fetchSeats(activeId);
+    }
+    
     setIsUpdating(false);
   };
 
@@ -160,7 +174,7 @@ export default function BusTabs() {
         <p className="page-header-eyebrow"><span>🚌</span> Immersion Bus Lines</p>
         <h1 className="page-header-title">Seat Reservation</h1>
         <p className="page-header-sub">
-          {session ? "You are in management mode. Approve or reject seat requests live." : "Select your seat for the immersion trip."}
+          {session ? "You are in management mode. Click any seat to edit details." : "Select your seat for the immersion trip."}
         </p>
       </header>
 
@@ -180,13 +194,13 @@ export default function BusTabs() {
           busName={activeBus?.name} 
           rows={rows} 
           onSeatClick={handleSeatClick}
-          onAdminAction={handleAdminAction}
+          onAdminEdit={handleAdminEdit}
           isAdmin={!!session}
           isUpdating={isUpdating}
         />
       </section>
 
-      {/* Modern Modal System */}
+      {/* Modern Modal System (User) */}
       {modalSeat && modalType && (
         <SeatModal 
           type={modalType}
@@ -194,6 +208,15 @@ export default function BusTabs() {
           requesterName={modalSeat.requester_name}
           onClose={() => { setModalSeat(null); setModalType(null); }}
           onSubmit={handleModalSubmit}
+        />
+      )}
+
+      {/* Unified Management System (Admin) */}
+      {adminModalSeat && (
+        <AdminSeatModal 
+          seat={adminModalSeat as any}
+          onClose={() => setAdminModalSeat(null)}
+          onUpdate={handleAdminUpdate}
         />
       )}
     </div>

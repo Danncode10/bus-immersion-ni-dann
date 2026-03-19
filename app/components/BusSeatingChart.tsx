@@ -2,6 +2,7 @@
 
 import React from "react";
 import "./BusSeatingChart.css";
+import { Edit3 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -25,7 +26,7 @@ export interface BusSeatingChartProps {
   busName?: string;
   rows: BusRow[];
   onSeatClick?: (seat: Seat) => void;
-  onAdminAction?: (seat: Seat, action: "approve" | "reject" | "remove") => void;
+  onAdminEdit?: (seat: Seat) => void;
   isAdmin?: boolean;
   isUpdating?: boolean;
 }
@@ -35,12 +36,12 @@ export interface BusSeatingChartProps {
 function SeatCell({ 
   seat, 
   onSeatClick,
-  onAdminAction,
+  onAdminEdit,
   isAdmin
 }: { 
   seat: Seat | null | undefined;
   onSeatClick?: (seat: Seat) => void;
-  onAdminAction?: (seat: Seat, action: "approve" | "reject" | "remove") => void;
+  onAdminEdit?: (seat: Seat) => void;
   isAdmin?: boolean;
 }) {
   if (!seat) {
@@ -61,41 +62,20 @@ function SeatCell({
 
   return (
     <td 
-      className={`seat-cell ${statusClass} ${isAdmin ? "admin-cell" : ""}`}
+      className={`seat-cell ${statusClass} ${isAdmin ? "admin-cell-clickable" : ""}`}
       onClick={() => {
-        if (isAdmin) return;
+        if (isAdmin) {
+          onAdminEdit?.(seat);
+          return;
+        }
         if (isVacant || isRequested) onSeatClick?.(seat);
       }}
     >
       <div className="seat-cell-inner">
         <span className="seat-number">#{seat.seatNumber}</span>
         
-        {/* Admin Controls */}
-        {isAdmin && (
-          <div className="admin-actions">
-            {isRequested && (
-              <>
-                <button 
-                  className="admin-btn approve" 
-                  onClick={(e) => { e.stopPropagation(); onAdminAction?.(seat, "approve"); }}
-                  title="Approve Assignment"
-                >✓</button>
-                <button 
-                  className="admin-btn reject" 
-                  onClick={(e) => { e.stopPropagation(); onAdminAction?.(seat, "reject"); }}
-                  title="Reject Request"
-                >×</button>
-              </>
-            )}
-            {isOccupied && (
-              <button 
-                className="admin-btn remove" 
-                onClick={(e) => { e.stopPropagation(); onAdminAction?.(seat, "remove"); }}
-                title="Remove Passenger"
-              >🗑</button>
-            )}
-          </div>
-        )}
+        {/* Admin "Edit" Badge */}
+        {isAdmin && <div className="admin-edit-badge"><Edit3 size={10} /> Edit</div>}
 
         <span className={`seat-name ${isVacant ? "vacant-label" : ""} ${isRequested ? "requested-label" : ""}`}>
           {isOccupied && seat.passenger_name}
@@ -120,7 +100,7 @@ export default function BusSeatingChart({
   busName = "Bus",
   rows,
   onSeatClick,
-  onAdminAction,
+  onAdminEdit,
   isAdmin = false,
   isUpdating = false,
 }: BusSeatingChartProps) {
@@ -178,15 +158,15 @@ export default function BusSeatingChart({
             {/* ── Passenger rows ── */}
             {rows.map((row, idx) => (
               <tr key={idx} className="passenger-row">
-                <SeatCell seat={row.leftWindow} onSeatClick={onSeatClick} onAdminAction={onAdminAction} isAdmin={isAdmin} />
-                <SeatCell seat={row.leftAisle} onSeatClick={onSeatClick} onAdminAction={onAdminAction} isAdmin={isAdmin} />
+                <SeatCell seat={row.leftWindow} onSeatClick={onSeatClick} onAdminEdit={onAdminEdit} isAdmin={isAdmin} />
+                <SeatCell seat={row.leftAisle} onSeatClick={onSeatClick} onAdminEdit={onAdminEdit} isAdmin={isAdmin} />
 
                 {/* Aisle column:
                     – back row: render the centre seat
                     – middle row: show vertical AISLE label
                     – all others: empty aisle gap               */}
                 {row.middleSeat ? (
-                  <SeatCell seat={row.middleSeat} onSeatClick={onSeatClick} onAdminAction={onAdminAction} isAdmin={isAdmin} />
+                  <SeatCell seat={row.middleSeat} onSeatClick={onSeatClick} onAdminEdit={onAdminEdit} isAdmin={isAdmin} />
                 ) : idx === Math.floor(rows.length / 2) ? (
                   <td className="aisle-cell aisle-label-cell">
                     <div className="aisle-text">
@@ -199,8 +179,8 @@ export default function BusSeatingChart({
                   <td className="aisle-cell" />
                 )}
 
-                <SeatCell seat={row.rightAisle} onSeatClick={onSeatClick} onAdminAction={onAdminAction} isAdmin={isAdmin} />
-                <SeatCell seat={row.rightWindow} onSeatClick={onSeatClick} onAdminAction={onAdminAction} isAdmin={isAdmin} />
+                <SeatCell seat={row.rightAisle} onSeatClick={onSeatClick} onAdminEdit={onAdminEdit} isAdmin={isAdmin} />
+                <SeatCell seat={row.rightWindow} onSeatClick={onSeatClick} onAdminEdit={onAdminEdit} isAdmin={isAdmin} />
               </tr>
             ))}
           </tbody>

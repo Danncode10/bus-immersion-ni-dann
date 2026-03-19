@@ -1,0 +1,132 @@
+.admin-modal-content {
+  background: white;
+  width: 95%;
+  max-width: 440px;
+  border-radius: 32px;
+  position: relative;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-header {
+  border-bottom: 2px solid #f8fafc;
+  padding-bottom: 1.5rem !important;
+}
+
+.icon-admin {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.status-pill {
+  font-size: 0.65rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-weight: 800;
+  padding: 0.25rem 0.6rem;
+  border-radius: 99px;
+  margin-left: 0.5rem;
+}
+
+.status-vacant { background: #e2e8f0; color: #64748b; }
+.status-occupied { background: #dcfce7; color: #16a34a; }
+.status-requested { background: #fef3c7; color: #d97706; }
+
+.admin-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  background: #f8fafc;
+  border-radius: 20px;
+}
+
+.section-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #94a3b8;
+  letter-spacing: 0.07em;
+  padding-left: 4px;
+}
+
+.request-info-box {
+  background: white;
+  border: 1px solid #e2e8f0;
+  padding: 1rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #1e293b;
+  font-size: 0.95rem;
+}
+
+.btn-action.approve-full {
+  background: #16a34a;
+  color: white;
+  height: 3.5rem;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  font-weight: 800;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 10px 15px -3px rgba(22, 163, 74, 0.3);
+  transition: all 0.2s;
+}
+
+.btn-action.approve-full:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgba(22, 163, 74, 0.4);
+  background: #15803d;
+}
+
+.manual-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.manual-form .input-wrapper {
+  flex: 1;
+}
+
+.btn-save {
+  background: #0f172a;
+  color: white;
+  border-radius: 12px;
+  padding: 0 1rem;
+  font-weight: 800;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-danger-outline {
+  background: transparent;
+  border: 2px solid #fee2e2;
+  color: #ef4444;
+  height: 3rem;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 800;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-danger-outline:hover {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.mt-auto { margin-top: auto; }
