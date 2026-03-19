@@ -79,14 +79,14 @@ function SeatCell({
           {isRequested && (
             <span className="request-stack">
                <span className="request-label-text">
-                 {seat.requester_names && seat.requester_names.length > 0 
-                   ? `${seat.requester_names.length} Request${seat.requester_names.length > 1 ? "s" : ""}`
+                 {seat.requester_names?.length === 1 
+                   ? `${seat.requester_names[0]} wants this`
+                   : seat.requester_names && seat.requester_names.length > 1
+                   ? `${seat.requester_names[0]} and ${seat.requester_names.length - 1} other${seat.requester_names.length - 1 > 1 ? "s" : ""}`
                    : "Seat Requested"}
                </span>
                <span className="request-subtext">
-                 {isAdmin 
-                   ? (seat.requester_names?.[0] || "Multiple") 
-                   : "Pending Approval"}
+                 {seat.requester_names && seat.requester_names.length > 1 ? "want this seat" : "seat reserved"}
                </span>
             </span>
           )}
