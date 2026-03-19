@@ -7,12 +7,13 @@ import "./SeatModal.css";
 interface SeatModalProps {
   type: "request" | "view";
   seatNumber: string | number;
-  requesterName?: string;
+  requesterNames?: string[];
   onClose: () => void;
   onSubmit?: (name: string) => void;
 }
 
-export default function SeatModal({ type, seatNumber, requesterName, onClose, onSubmit }: SeatModalProps) {
+export default function SeatModal({ type: initialType, seatNumber, requesterNames, onClose, onSubmit }: SeatModalProps) {
+  const [type, setType] = useState<"request" | "view">(initialType);
   const [name, setName] = useState("");
   const isRequest = type === "request";
 
@@ -63,13 +64,23 @@ export default function SeatModal({ type, seatNumber, requesterName, onClose, on
           </form>
         ) : (
           <div className="modal-body">
-            <div className="info-card">
-              <span className="info-label">Current Requester:</span>
-              <span className="info-value">{requesterName || "Loading..."}</span>
+            <label className="section-label">Requester List ({requesterNames?.length || 0})</label>
+            <div className="request-list-view">
+              {requesterNames && requesterNames.length > 0 ? (
+                requesterNames.map((n, idx) => (
+                  <div key={idx} className="requester-item">
+                    <User size={16} />
+                    <span>{n}</span>
+                  </div>
+                ))
+              ) : (
+                <p className="no-requesters">No requests yet.</p>
+              )}
             </div>
-            <p className="info-note">Admistration will review this request and assign the passenger soon. You can still request other vacant seats.</p>
+            <p className="info-note">Admistration will review these requests and assign the final passenger. You can still add your name to the request list below.</p>
             <div className="modal-footer">
-              <button type="button" className="btn-submit" onClick={onClose}>Close</button>
+              <button type="button" className="btn-cancel" onClick={onClose}>Close</button>
+              <button type="button" className="btn-submit" onClick={() => setType("request")}>I want this seat too</button>
             </div>
           </div>
         )}

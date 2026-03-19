@@ -11,7 +11,7 @@ export interface Seat {
   seatNumber: number | string;
   status: "vacant" | "occupied" | "requested";
   passenger_name?: string;  // final assigned name
-  requester_name?: string;  // name of person who clicked "Request"
+  requester_names?: string[]; // list of all people who requested this seat
 }
 
 export interface BusRow {
@@ -55,7 +55,7 @@ function SeatCell({
   const displayName = isOccupied 
     ? seat.passenger_name 
     : isRequested 
-    ? seat.requester_name 
+    ? (seat.requester_names?.[0] || "Multiple") 
     : "Vacant";
 
   const statusClass = `seat-${seat.status}`;
@@ -74,21 +74,26 @@ function SeatCell({
       <div className="seat-cell-inner">
         <span className="seat-number">#{seat.seatNumber}</span>
         
-        {/* Admin "Edit" Badge */}
-        {isAdmin && <div className="admin-edit-badge"><Edit3 size={10} /> Edit</div>}
-
         <span className={`seat-name ${isVacant ? "vacant-label" : ""} ${isRequested ? "requested-label" : ""}`}>
           {isOccupied && seat.passenger_name}
           {isRequested && (
             <span className="request-stack">
-               <span className="request-label-text">Seat Requested</span>
-               <span className="request-subtext">{isAdmin ? seat.requester_name : "Pending Approval"}</span>
+               <span className="request-label-text">
+                 {seat.requester_names && seat.requester_names.length > 0 
+                   ? `${seat.requester_names.length} Request${seat.requester_names.length > 1 ? "s" : ""}`
+                   : "Seat Requested"}
+               </span>
+               <span className="request-subtext">
+                 {isAdmin 
+                   ? (seat.requester_names?.[0] || "Multiple") 
+                   : "Pending Approval"}
+               </span>
             </span>
           )}
           {isVacant && "Vacant"}
         </span>
         {!isAdmin && isVacant && <div className="click-to-request">Click to Request</div>}
-        {!isAdmin && isRequested && <div className="click-to-view">Click to View</div>}
+        {!isAdmin && isRequested && <div className="click-to-view">Click to View List</div>}
       </div>
     </td>
   );

@@ -10,7 +10,7 @@ interface AdminSeatModalProps {
     seatNumber: string | number;
     status: "vacant" | "occupied" | "requested";
     passenger_name?: string;
-    requester_name?: string;
+    requester_names?: string[];
   };
   onClose: () => void;
   onUpdate: (data: any) => void;
@@ -19,23 +19,35 @@ interface AdminSeatModalProps {
 export default function AdminSeatModal({ seat, onClose, onUpdate }: AdminSeatModalProps) {
   const [passengerName, setPassengerName] = useState(seat.passenger_name || "");
   const [isBusy, setIsBusy] = useState(false);
+  const [showRequests, setShowRequests] = useState(false);
 
   useEffect(() => {
     setPassengerName(seat.passenger_name || "");
   }, [seat]);
 
-  const handleApprove = () => {
+  const handleApprove = (name: string) => {
     onUpdate({ 
       status: "occupied", 
-      passenger_name: seat.requester_name, 
-      requester_name: null 
+      passenger_name: name, 
+      requester_names: []
     });
     onClose();
   };
 
+  const handleRemoveRequest = (nameToRemove: string) => {
+    const updatedNames = (seat.requester_names || []).filter(n => n !== nameToRemove);
+    if (updatedNames.length === 0) {
+      onUpdate({ status: "vacant", requester_names: [] });
+    } else {
+      onUpdate({ 
+        requester_names: updatedNames
+      });
+    }
+  };
+
   const handleVacate = () => {
     if (window.confirm("Are you sure you want to make this seat vacant?")) {
-      onUpdate({ status: "vacant", passenger_name: null, requester_name: null });
+      onUpdate({ status: "vacant", passenger_name: null, requester_names: [] });
       onClose();
     }
   };
@@ -67,14 +79,42 @@ export default function AdminSeatModal({ seat, onClose, onUpdate }: AdminSeatMod
           {/* Section 1: Request Pending */}
           {seat.status === "requested" && (
             <div className="admin-section">
-               <label className="section-label">Pending Request</label>
-               <div className="request-info-box">
-                  <User size={18} />
-                  <span>Requested by: <strong>{seat.requester_name}</strong></span>
-               </div>
-               <button className="btn-action approve-full" onClick={handleApprove}>
-                  <CheckCircle size={18} /> Approve This Request
-               </button>
+               <label className="section-label">Pending Requests</label>
+               
+               {!showRequests ? (
+                  <button className="btn-view-requests" onClick={() => setShowRequests(true)}>
+                    <span>View Name Requests</span>
+                    <span className="count-tag">{seat.requester_names?.length || 0}</span>
+                  </button>
+               ) : (
+                  <div className="admin-request-list">
+                    {seat.requester_names?.map((name, idx) => (
+                      <div key={idx} className="admin-request-item">
+                        <div className="admin-request-info">
+                          <User size={16} />
+                          <span>{name}</span>
+                        </div>
+                        <div className="admin-request-actions">
+                          <button 
+                            className="btn-mini-action approve" 
+                            title="Approve"
+                            onClick={() => handleApprove(name)}
+                          >
+                            <CheckCircle size={16} />
+                          </button>
+                          <button 
+                            className="btn-mini-action remove" 
+                            title="Remove"
+                            onClick={() => handleRemoveRequest(name)}
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                    <button className="btn-save mt-2" onClick={() => setShowRequests(false)}>Hide List</button>
+                  </div>
+               )}
             </div>
           )}
 
@@ -93,7 +133,7 @@ export default function AdminSeatModal({ seat, onClose, onUpdate }: AdminSeatMod
                 />
               </div>
               <button type="submit" className="btn-save" disabled={!passengerName.trim()}>
-                {seat.status === "occupied" ? "Update Name" : "Assign Now"}
+                {seat.status === "occupied" ? "Update Name" : "Assign Directly"}
               </button>
             </form>
           </div>

@@ -1,0 +1,147 @@
+[
+    {
+        "final_schema": {
+            "tables": [
+                {
+                    "table_name": "buses",
+                    "columns": [
+                        {
+                            "column": "id",
+                            "type": "uuid",
+                            "nullable": "NO",
+                            "default": "gen_random_uuid()",
+                            "is_primary": true
+                        },
+                        {
+                            "column": "name",
+                            "type": "text",
+                            "nullable": "NO",
+                            "default": null,
+                            "is_primary": false
+                        },
+                        {
+                            "column": "created_at",
+                            "type": "timestamptz",
+                            "nullable": "YES",
+                            "default": "now()",
+                            "is_primary": false
+                        }
+                    ],
+                    "policies": [
+                        {
+                            "name": "Admins manage buses",
+                            "command": "ALL",
+                            "roles": [
+                                "authenticated"
+                            ],
+                            "using": "true",
+                            "check": "true"
+                        },
+                        {
+                            "name": "Public can view buses",
+                            "command": "SELECT",
+                            "roles": [
+                                "public"
+                            ],
+                            "using": "true",
+                            "check": null
+                        }
+                    ],
+                    "foreign_keys": []
+                },
+                {
+                    "table_name": "seats",
+                    "columns": [
+                        {
+                            "column": "id",
+                            "type": "uuid",
+                            "nullable": "NO",
+                            "default": "gen_random_uuid()",
+                            "is_primary": true
+                        },
+                        {
+                            "column": "bus_id",
+                            "type": "uuid",
+                            "nullable": "YES",
+                            "default": null,
+                            "is_primary": false
+                        },
+                        {
+                            "column": "seat_number",
+                            "type": "int4",
+                            "nullable": "NO",
+                            "default": null,
+                            "is_primary": false
+                        },
+                        {
+                            "column": "status",
+                            "type": "text",
+                            "nullable": "YES",
+                            "default": "'vacant'::text",
+                            "is_primary": false
+                        },
+                        {
+                            "column": "passenger_name",
+                            "type": "text",
+                            "nullable": "YES",
+                            "default": null,
+                            "is_primary": false
+                        },
+                        {
+                            "column": "updated_at",
+                            "type": "timestamptz",
+                            "nullable": "YES",
+                            "default": "now()",
+                            "is_primary": false
+                        },
+                        {
+                            "column": "requester_names",
+                            "type": "_text",
+                            "nullable": "YES",
+                            "default": "'{}'::text[]",
+                            "is_primary": false
+                        }
+                    ],
+                    "policies": [
+                        {
+                            "name": "Anyone can request a seat",
+                            "command": "UPDATE",
+                            "roles": [
+                                "anon",
+                                "authenticated"
+                            ],
+                            "using": "(status = ANY (ARRAY['vacant'::text, 'requested'::text]))",
+                            "check": "(status = 'requested'::text)"
+                        },
+                        {
+                            "name": "Admins full access",
+                            "command": "ALL",
+                            "roles": [
+                                "authenticated"
+                            ],
+                            "using": "true",
+                            "check": "true"
+                        },
+                        {
+                            "name": "Public can view seats",
+                            "command": "SELECT",
+                            "roles": [
+                                "public"
+                            ],
+                            "using": "true",
+                            "check": null
+                        }
+                    ],
+                    "foreign_keys": [
+                        {
+                            "column": "bus_id",
+                            "references_table": "buses",
+                            "references_column": "id"
+                        }
+                    ]
+                }
+            ],
+            "enums": []
+        }
+    }
+]

@@ -77,7 +77,7 @@ export default function BusTabs() {
           seatNumber: s.seat_number,
           status: s.status,
           passenger_name: s.passenger_name,
-          requester_name: s.requester_name
+          requester_names: s.requester_names || []
         } as Seat;
       };
       groupedRows.push({
@@ -105,20 +105,36 @@ export default function BusTabs() {
   const handleSeatClick = (seat: Seat) => {
     if (session) return; 
     setModalSeat(seat);
+    // If vacant, direct request. If requested, view list first but can also request.
     setModalType(seat.status === "vacant" ? "request" : "view");
   };
 
   const handleModalSubmit = async (name: string) => {
     if (!modalSeat) return;
     setIsUpdating(true);
+    
+    // Get existing names
+    const currentNames = modalSeat.requester_names || [];
+    if (currentNames.includes(name)) {
+      alert("You have already requested this seat.");
+      setIsUpdating(false);
+      return;
+    }
+    const updatedNames = [...currentNames, name];
+
+    const { error } = await supabase.from("seats")
+      .update({ 
+        status: "requested", 
+        requester_names: updatedNames
+      })
+      .eq("id", modalSeat.id);
+
+    if (error) {
+      alert("Request failed: " + error.message);
+    }
+
     setModalSeat(null);
     setModalType(null);
-
-    await supabase.from("seats")
-      .update({ status: "requested", requester_name: name })
-      .eq("id", modalSeat.id)
-      .eq("status", "vacant");
-
     setIsUpdating(false);
   };
 
@@ -205,7 +221,7 @@ export default function BusTabs() {
         <SeatModal 
           type={modalType}
           seatNumber={modalSeat.seatNumber}
-          requesterName={modalSeat.requester_name}
+          requesterNames={modalSeat.requester_names}
           onClose={() => { setModalSeat(null); setModalType(null); }}
           onSubmit={handleModalSubmit}
         />

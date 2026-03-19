@@ -130,3 +130,106 @@
 }
 
 .mt-auto { margin-top: auto; }
+
+/* ── Requester List Management ── */
+.btn-view-requests {
+  background: white;
+  border: 1.5px solid #e2e8f0;
+  color: #1e293b;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-view-requests:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.count-tag {
+  background: #f1f5f9;
+  color: #64748b;
+  padding: 0.2rem 0.5rem;
+  border-radius: 99px;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.admin-request-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.admin-request-item {
+  background: white;
+  border: 1.5px solid #f1f5f9;
+  padding: 0.75rem 1rem;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.2s;
+}
+
+.admin-request-item:hover {
+  border-color: #e2e8f0;
+  transform: translateX(2px);
+}
+
+.admin-request-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.admin-request-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.btn-mini-action {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-mini-action.approve {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.btn-mini-action.approve:hover {
+  background: #16a34a;
+  color: white;
+}
+
+.btn-mini-action.remove {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+.btn-mini-action.remove:hover {
+  background: #ef4444;
+  color: white;
+}
