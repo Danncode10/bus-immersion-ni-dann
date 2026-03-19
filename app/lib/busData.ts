@@ -14,15 +14,14 @@ function blankRows(totalRows: number): BusRow[] {
     const base = i * 4;
     const isLastRow = i === totalRows - 1;
     return {
-      leftWindow:  { seatNumber: base + 1 },
-      leftAisle:   { seatNumber: base + 2 },
-      // seat #(base+3) lives in the aisle column on the last row only
+      leftWindow:  { seatNumber: base + 1, status: "vacant" },
+      leftAisle:   { seatNumber: base + 2, status: "vacant" },
       ...(isLastRow
-        ? { middleSeat: { seatNumber: base + 3 } }
+        ? { middleSeat: { seatNumber: base + 3, status: "vacant" } }
         : {}),
-      rightAisle:  { seatNumber: isLastRow ? base + 4 : base + 3 },
-      rightWindow: { seatNumber: isLastRow ? base + 5 : base + 4 },
-    };
+      rightAisle:  { seatNumber: isLastRow ? base + 4 : base + 3, status: "vacant" },
+      rightWindow: { seatNumber: isLastRow ? base + 5 : base + 4, status: "vacant" },
+    } as BusRow;
   });
 }
 
