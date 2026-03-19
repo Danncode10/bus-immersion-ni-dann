@@ -8,7 +8,7 @@ import AdminSeatModal from "./AdminSeatModal";
 import AdminVacantModal from "./AdminVacantModal";
 import { supabase } from "../lib/supabase";
 import { Session } from "@supabase/supabase-js";
-import { ShieldCheck, RefreshCw, Github } from "lucide-react";
+import { ShieldCheck, RefreshCw, Github, Pencil } from "lucide-react";
 import Link from "next/link";
 
 interface Bus {
@@ -198,6 +198,24 @@ export default function BusTabs() {
     setIsUpdating(false);
   };
 
+  const handleRenameBus = async () => {
+    const activeBusObj = buses.find(b => b.id === activeId);
+    if (!activeId || !activeBusObj) return;
+    
+    const newName = window.prompt(`Enter new name for this bus:`, activeBusObj.name);
+    if (!newName || newName.trim() === activeBusObj.name || newName.trim() === "") return;
+    
+    setIsUpdating(true);
+    const { error } = await supabase.from("buses").update({ name: newName.trim() }).eq("id", activeId);
+    
+    if (error) {
+      alert("Failed to rename bus: " + error.message);
+    } else {
+      setBuses(buses.map(b => b.id === activeId ? { ...b, name: newName.trim() } : b));
+    }
+    setIsUpdating(false);
+  };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     window.location.reload(); 
@@ -253,15 +271,28 @@ export default function BusTabs() {
         ))}
       </nav>
 
-      <button 
-        className="refresh-btn tab-sub-refresh" 
-        onClick={() => activeId && fetchSeats(activeId)}
-        title="Manual Refresh"
-        disabled={!activeId || isUpdating}
-      >
-        <RefreshCw size={14} className={isUpdating ? "animate-spin" : ""} />
-        <span>Sync {activeBus?.name} Latest Data</span>
-      </button>
+      <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center", marginBottom: "1.5rem" }}>
+        <button 
+          className="refresh-btn" 
+          onClick={() => activeId && fetchSeats(activeId)}
+          title="Manual Refresh"
+          disabled={!activeId || isUpdating}
+        >
+          <RefreshCw size={14} className={isUpdating ? "animate-spin" : ""} />
+          <span>Sync {activeBus?.name} Latest Data</span>
+        </button>
+
+        {session && (
+          <button 
+            className="refresh-btn" 
+            onClick={handleRenameBus}
+            disabled={!activeId || isUpdating}
+          >
+            <Pencil size={14} />
+            <span>Rename {activeBus?.name}</span>
+          </button>
+        )}
+      </div>
 
       <section key={activeId} className="tab-panel">
         <BusSeatingChart 
