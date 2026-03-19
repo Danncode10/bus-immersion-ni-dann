@@ -6,8 +6,11 @@ import "./BusSeatingChart.css";
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 export interface Seat {
+  id?: string;            // Supabase UUID
   seatNumber: number | string;
-  passenger?: string; // if blank/undefined → "Vacant"
+  status: "vacant" | "occupied" | "requested";
+  passenger_name?: string;  // final assigned name
+  requester_name?: string;  // name of person who clicked "Request"
 }
 
 export interface BusRow {
@@ -21,23 +24,52 @@ export interface BusRow {
 export interface BusSeatingChartProps {
   busName?: string;
   rows: BusRow[];
+  onSeatClick?: (seat: Seat) => void;
+  isUpdating?: boolean;
 }
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
-function SeatCell({ seat }: { seat: Seat | null | undefined }) {
+function SeatCell({ 
+  seat, 
+  onSeatClick 
+}: { 
+  seat: Seat | null | undefined;
+  onSeatClick?: (seat: Seat) => void;
+}) {
   if (!seat) {
     return <td className="seat-cell seat-empty" />;
   }
 
-  const isVacant = !seat.passenger || seat.passenger.trim() === "";
+  const isVacant = seat.status === "vacant";
+  const isOccupied = seat.status === "occupied";
+  const isRequested = seat.status === "requested";
+
+  const displayName = isOccupied 
+    ? seat.passenger_name 
+    : isRequested 
+    ? seat.requester_name 
+    : "Vacant";
+
+  const statusClass = `seat-${seat.status}`;
 
   return (
-    <td className={`seat-cell ${isVacant ? "seat-vacant" : "seat-occupied"}`}>
+    <td 
+      className={`seat-cell ${statusClass}`}
+      onClick={() => isVacant && onSeatClick && onSeatClick(seat)}
+    >
       <span className="seat-number">#{seat.seatNumber}</span>
-      <span className={`seat-name ${isVacant ? "vacant-label" : ""}`}>
-        {isVacant ? "Vacant" : seat.passenger}
+      <span className={`seat-name ${isVacant ? "vacant-label" : ""} ${isRequested ? "requested-label" : ""}`}>
+        {isOccupied && seat.passenger_name}
+        {isRequested && (
+          <span className="request-stack">
+             <span className="request-label-text">Requested by:</span>
+             <span className="request-name">{seat.requester_name}</span>
+          </span>
+        )}
+        {isVacant && "Vacant"}
       </span>
+      {isVacant && <div className="click-to-request">Click to Request</div>}
     </td>
   );
 }
@@ -47,9 +79,17 @@ function SeatCell({ seat }: { seat: Seat | null | undefined }) {
 export default function BusSeatingChart({
   busName = "Bus",
   rows,
+  onSeatClick,
+  isUpdating = false,
 }: BusSeatingChartProps) {
   return (
-    <div className="bus-wrapper">
+    <div className={`bus-wrapper ${isUpdating ? "is-updating-opacity" : ""}`}>
+      {isUpdating && (
+        <div className="update-overlay">
+          <div className="spinner"></div>
+          <span>Syncing with Supabase...</span>
+        </div>
+      )}
       <div className="bus-container">
         {/* Bus title */}
         <div className="bus-title">
@@ -96,15 +136,15 @@ export default function BusSeatingChart({
             {/* ── Passenger rows ── */}
             {rows.map((row, idx) => (
               <tr key={idx} className="passenger-row">
-                <SeatCell seat={row.leftWindow} />
-                <SeatCell seat={row.leftAisle} />
+                <SeatCell seat={row.leftWindow} onSeatClick={onSeatClick} />
+                <SeatCell seat={row.leftAisle} onSeatClick={onSeatClick} />
 
                 {/* Aisle column:
                     – back row: render the centre seat
                     – middle row: show vertical AISLE label
                     – all others: empty aisle gap               */}
                 {row.middleSeat ? (
-                  <SeatCell seat={row.middleSeat} />
+                  <SeatCell seat={row.middleSeat} onSeatClick={onSeatClick} />
                 ) : idx === Math.floor(rows.length / 2) ? (
                   <td className="aisle-cell aisle-label-cell">
                     <div className="aisle-text">
@@ -117,8 +157,8 @@ export default function BusSeatingChart({
                   <td className="aisle-cell" />
                 )}
 
-                <SeatCell seat={row.rightAisle} />
-                <SeatCell seat={row.rightWindow} />
+                <SeatCell seat={row.rightAisle} onSeatClick={onSeatClick} />
+                <SeatCell seat={row.rightWindow} onSeatClick={onSeatClick} />
               </tr>
             ))}
           </tbody>
