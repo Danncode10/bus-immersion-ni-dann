@@ -4,14 +4,10 @@ import React, { useState, useEffect } from "react";
 import { X, UserPlus, Trash2, CheckCircle, Edit3, User } from "lucide-react";
 import "./AdminSeatModal.css";
 
+import { Seat } from "./BusSeatingChart";
+
 interface AdminSeatModalProps {
-  seat: {
-    id: string;
-    seatNumber: string | number;
-    status: "vacant" | "occupied" | "requested";
-    passenger_name?: string;
-    requester_names?: string[];
-  };
+  seat: Seat;
   onClose: () => void;
   onUpdate: (data: any) => void;
 }
@@ -55,7 +51,7 @@ export default function AdminSeatModal({ seat, onClose, onUpdate }: AdminSeatMod
   const handleManualAssign = (e: React.FormEvent) => {
     e.preventDefault();
     if (passengerName.trim()) {
-      onUpdate({ status: "occupied", passenger_name: passengerName.trim(), requester_name: null });
+      onUpdate({ status: "occupied", passenger_name: passengerName.trim(), requester_names: [] });
       onClose();
     }
   };

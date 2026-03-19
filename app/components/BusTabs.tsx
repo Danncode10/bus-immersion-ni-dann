@@ -267,13 +267,13 @@ export default function BusTabs() {
       {adminModalSeat && (
         adminModalSeat.status === "vacant" ? (
           <AdminVacantModal 
-            seat={adminModalSeat as any}
+            seat={adminModalSeat}
             onClose={() => setAdminModalSeat(null)}
             onUpdate={handleAdminUpdate}
           />
         ) : (
           <AdminSeatModal 
-            seat={adminModalSeat as any}
+            seat={adminModalSeat}
             onClose={() => setAdminModalSeat(null)}
             onUpdate={handleAdminUpdate}
           />

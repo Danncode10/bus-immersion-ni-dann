@@ -4,11 +4,10 @@ import React, { useState } from "react";
 import { X, UserPlus, Check } from "lucide-react";
 import "./AdminSeatModal.css"; // Reuse styling for consistency
 
+import { Seat } from "./BusSeatingChart";
+
 interface AdminVacantModalProps {
-  seat: {
-    id: string;
-    seatNumber: string | number;
-  };
+  seat: Seat;
   onClose: () => void;
   onUpdate: (data: any) => void;
 }
