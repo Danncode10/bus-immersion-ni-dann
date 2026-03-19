@@ -231,11 +231,12 @@
 .admin-btn.remove:hover { background: #f8fafc; }
 
 .seat-occupied {
-  background: #ffffff;
+  background: #f0fdf4 !important;
+  border-left: 3px solid #16a34a !important;
 }
 
 .seat-requested {
-  background: #fffbeb;
+  background: #fffbeb !important;
   border-left: 3px solid #f59e0b !important;
 }
 
@@ -265,6 +266,10 @@
   line-height: 1.4;
 }
 
+.seat-occupied .seat-number {
+  background: #16a34a;
+}
+
 .seat-vacant .seat-number {
   background: #94a3b8;
 }
@@ -285,6 +290,11 @@
   line-height: 1.3;
 }
 
+.seat-occupied .seat-name {
+  color: #15803d;
+  font-weight: 700;
+}
+
 .requested-label {
   color: #b45309;
 }
@@ -295,9 +305,9 @@
 }
 
 .request-label-text {
-  font-size: 0.6rem;
+  font-size: 0.55rem;
   text-transform: uppercase;
-  font-weight: 700;
+  font-weight: 800;
   opacity: 0.6;
   letter-spacing: 0.05em;
 }
@@ -307,6 +317,12 @@
   font-weight: 700;
 }
 
+.request-subtext {
+  font-size: 0.72rem;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
 .vacant-label {
   color: #cbd5e1;
   font-style: italic;
@@ -314,25 +330,29 @@
   font-size: 0.75rem;
 }
 
-.click-to-request {
+.click-to-request,
+.click-to-view {
   position: absolute;
   bottom: 4px;
   right: 6px;
   font-size: 0.55rem;
-  font-weight: 700;
-  color: #2563eb;
+  font-weight: 800;
   text-transform: uppercase;
   opacity: 0;
   transition: opacity 0.2s ease;
 }
 
-.seat-vacant:hover .click-to-request {
+.click-to-request { color: #2563eb; }
+.click-to-view { color: #f59e0b; }
+
+.seat-vacant:hover .click-to-request,
+.seat-requested:hover .click-to-view {
   opacity: 1;
 }
 
 /* ── Hover states ────────────────────────────────── */
 .seat-occupied:hover {
-  background: #eff6ff !important;
+  background: #dcfce7 !important;
 }
 
 .seat-requested:hover {
@@ -340,7 +360,7 @@
 }
 
 .seat-vacant:hover {
-  background: #f8fafc !important;
+  background: #f1f5f9 !important;
 }
 
 /* ── Responsive ──────────────────────────────────── */

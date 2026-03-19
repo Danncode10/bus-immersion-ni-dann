@@ -62,7 +62,11 @@ function SeatCell({
   return (
     <td 
       className={`seat-cell ${statusClass} ${isAdmin ? "admin-cell" : ""}`}
-      onClick={() => !isAdmin && isVacant && onSeatClick && onSeatClick(seat)}
+      onClick={() => {
+        if (isAdmin) return;
+        if (isVacant) onSeatClick?.(seat);
+        if (isRequested) alert(`This seat is currently requested by: ${seat.requester_name}`);
+      }}
     >
       <div className="seat-cell-inner">
         <span className="seat-number">#{seat.seatNumber}</span>
@@ -98,13 +102,14 @@ function SeatCell({
           {isOccupied && seat.passenger_name}
           {isRequested && (
             <span className="request-stack">
-               <span className="request-label-text">Requested by:</span>
-               <span className="request-name">{seat.requester_name}</span>
+               <span className="request-label-text">Seat Requested</span>
+               <span className="request-subtext">{isAdmin ? seat.requester_name : "Pending Approval"}</span>
             </span>
           )}
           {isVacant && "Vacant"}
         </span>
         {!isAdmin && isVacant && <div className="click-to-request">Click to Request</div>}
+        {!isAdmin && isRequested && <div className="click-to-view">Click to View</div>}
       </div>
     </td>
   );
