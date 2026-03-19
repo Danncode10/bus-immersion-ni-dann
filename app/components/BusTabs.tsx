@@ -5,9 +5,10 @@ import "./BusTabs.css";
 import BusSeatingChart, { BusRow, Seat } from "./BusSeatingChart";
 import SeatModal from "./SeatModal";
 import AdminSeatModal from "./AdminSeatModal";
+import AdminVacantModal from "./AdminVacantModal";
 import { supabase } from "../lib/supabase";
 import { Session } from "@supabase/supabase-js";
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck, RefreshCw } from "lucide-react";
 import Link from "next/link";
 
 interface Bus {
@@ -205,6 +206,16 @@ export default function BusTabs() {
         ))}
       </nav>
 
+      <button 
+        className="refresh-btn tab-sub-refresh" 
+        onClick={() => activeId && fetchSeats(activeId)}
+        title="Manual Refresh"
+        disabled={!activeId || isUpdating}
+      >
+        <RefreshCw size={14} className={isUpdating ? "animate-spin" : ""} />
+        <span>Sync {activeBus?.name} Latest Data</span>
+      </button>
+
       <section key={activeId} className="tab-panel">
         <BusSeatingChart 
           busName={activeBus?.name} 
@@ -229,11 +240,19 @@ export default function BusTabs() {
 
       {/* Unified Management System (Admin) */}
       {adminModalSeat && (
-        <AdminSeatModal 
-          seat={adminModalSeat as any}
-          onClose={() => setAdminModalSeat(null)}
-          onUpdate={handleAdminUpdate}
-        />
+        adminModalSeat.status === "vacant" ? (
+          <AdminVacantModal 
+            seat={adminModalSeat as any}
+            onClose={() => setAdminModalSeat(null)}
+            onUpdate={handleAdminUpdate}
+          />
+        ) : (
+          <AdminSeatModal 
+            seat={adminModalSeat as any}
+            onClose={() => setAdminModalSeat(null)}
+            onUpdate={handleAdminUpdate}
+          />
+        )
       )}
     </div>
   );

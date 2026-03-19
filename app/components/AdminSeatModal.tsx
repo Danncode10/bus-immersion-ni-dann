@@ -20,6 +20,7 @@ export default function AdminSeatModal({ seat, onClose, onUpdate }: AdminSeatMod
   const [passengerName, setPassengerName] = useState(seat.passenger_name || "");
   const [isBusy, setIsBusy] = useState(false);
   const [showRequests, setShowRequests] = useState(false);
+  const [showConfirmVacate, setShowConfirmVacate] = useState(false);
 
   useEffect(() => {
     setPassengerName(seat.passenger_name || "");
@@ -45,11 +46,9 @@ export default function AdminSeatModal({ seat, onClose, onUpdate }: AdminSeatMod
     }
   };
 
-  const handleVacate = () => {
-    if (window.confirm("Are you sure you want to make this seat vacant?")) {
-      onUpdate({ status: "vacant", passenger_name: null, requester_names: [] });
-      onClose();
-    }
+  const handleVacateConfirm = () => {
+    onUpdate({ status: "vacant", passenger_name: null, requester_names: [] });
+    onClose();
   };
 
   const handleManualAssign = (e: React.FormEvent) => {
@@ -139,12 +138,27 @@ export default function AdminSeatModal({ seat, onClose, onUpdate }: AdminSeatMod
           </div>
 
           {/* Section 3: Dangerous Actions */}
-          {seat.status !== "vacant" && (
+          {seat.status !== "vacant" && !showConfirmVacate && (
             <div className="admin-section mt-auto">
-              <button className="btn-danger-outline" onClick={handleVacate}>
+              <button className="btn-danger-outline" onClick={() => setShowConfirmVacate(true)}>
                 <Trash2 size={16} /> Make Seat Vacant
               </button>
             </div>
+          )}
+
+          {/* Confirm Vacate Overlay logic (inline inside the same modal body) */}
+          {showConfirmVacate && (
+             <div className="confirm-delete-overlay">
+                <div className="confirm-icon-box">
+                   <Trash2 size={32} color="#ef4444" />
+                </div>
+                <h3>Are you sure?</h3>
+                <p>This will remove <strong>{seat.passenger_name || "the passenger"}</strong> and clear all requests. This action cannot be undone.</p>
+                <div className="confirm-btn-group">
+                   <button className="btn-confirm-yes" onClick={handleVacateConfirm}>Yes, Make Vacant</button>
+                   <button className="btn-confirm-no" onClick={() => setShowConfirmVacate(false)}>No, Go Back</button>
+                </div>
+             </div>
           )}
         </div>
       </div>
