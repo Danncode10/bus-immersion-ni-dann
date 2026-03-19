@@ -64,8 +64,7 @@ function SeatCell({
       className={`seat-cell ${statusClass} ${isAdmin ? "admin-cell" : ""}`}
       onClick={() => {
         if (isAdmin) return;
-        if (isVacant) onSeatClick?.(seat);
-        if (isRequested) alert(`This seat is currently requested by: ${seat.requester_name}`);
+        if (isVacant || isRequested) onSeatClick?.(seat);
       }}
     >
       <div className="seat-cell-inner">

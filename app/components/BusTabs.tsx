@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "./BusTabs.css";
 import BusSeatingChart, { BusRow, Seat } from "./BusSeatingChart";
+import SeatModal from "./SeatModal";
 import { supabase } from "../lib/supabase";
 import { Session } from "@supabase/supabase-js";
 import { ShieldCheck } from "lucide-react";
@@ -20,6 +21,10 @@ export default function BusTabs() {
   const [loading, setLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
+
+  // Modal State
+  const [modalSeat, setModalSeat] = useState<Seat | null>(null);
+  const [modalType, setModalType] = useState<"request" | "view" | null>(null);
 
   // 1. Auth & Buses Fetch
   useEffect(() => {
@@ -93,12 +98,23 @@ export default function BusTabs() {
   }, [activeId, fetchSeats]);
 
   // 3. User Actions
-  const handleSeatClick = async (seat: Seat) => {
-    if (seat.status !== "vacant" || session) return; // session check: admins don't "request" via prompt
-    const name = window.prompt("Enter your name to request this seat:");
-    if (!name?.trim()) return;
+  const handleSeatClick = (seat: Seat) => {
+    if (session) return; // Admins use direct buttons
+    setModalSeat(seat);
+    setModalType(seat.status === "vacant" ? "request" : "view");
+  };
+
+  const handleModalSubmit = async (name: string) => {
+    if (!modalSeat) return;
     setIsUpdating(true);
-    await supabase.from("seats").update({ status: "requested", requester_name: name.trim() }).eq("id", seat.id).eq("status", "vacant");
+    setModalSeat(null);
+    setModalType(null);
+
+    await supabase.from("seats")
+      .update({ status: "requested", requester_name: name })
+      .eq("id", modalSeat.id)
+      .eq("status", "vacant");
+
     setIsUpdating(false);
   };
 
@@ -116,7 +132,7 @@ export default function BusTabs() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    window.location.reload(); // Hard refresh to clear all states
+    window.location.reload(); 
   };
 
   if (loading) return <div className="page-shell"><div className="spinner"></div><p>Wait a moment...</p></div>;
@@ -169,6 +185,17 @@ export default function BusTabs() {
           isUpdating={isUpdating}
         />
       </section>
+
+      {/* Modern Modal System */}
+      {modalSeat && modalType && (
+        <SeatModal 
+          type={modalType}
+          seatNumber={modalSeat.seatNumber}
+          requesterName={modalSeat.requester_name}
+          onClose={() => { setModalSeat(null); setModalType(null); }}
+          onSubmit={handleModalSubmit}
+        />
+      )}
     </div>
   );
 }
