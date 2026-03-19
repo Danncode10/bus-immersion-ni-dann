@@ -20,6 +20,7 @@ export default function BusTabs() {
   const [buses, setBuses] = useState<Bus[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [rows, setRows] = useState<BusRow[]>([]);
+  const [cachedRows, setCachedRows] = useState<Record<string, BusRow[]>>({});
   const [loading, setLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
@@ -55,7 +56,12 @@ export default function BusTabs() {
   }, []);
 
   // 2. Fetch Seats
-  const fetchSeats = useCallback(async (busId: string) => {
+  const fetchSeats = useCallback(async (busId: string, skipCache = false) => {
+    // 1. Check Cache first for instant feedback
+    if (!skipCache && cachedRows[busId]) {
+      setRows(cachedRows[busId]);
+    }
+
     const { data, error } = await supabase
       .from("seats")
       .select("*")
@@ -89,14 +95,18 @@ export default function BusTabs() {
         rightWindow: isLastRow ? findSeat(baseIdx + 5) : findSeat(baseIdx + 4),
       });
     }
+
+    // 2. Update both state and cache
     setRows(groupedRows);
-  }, []);
+    setCachedRows(prev => ({ ...prev, [busId]: groupedRows }));
+  }, [cachedRows]);
 
   useEffect(() => {
     if (activeId) {
+      // Background revalidate
       fetchSeats(activeId);
       const channel = supabase.channel(`bus-${activeId}`)
-        .on("postgres_changes", { event: "*", schema: "public", table: "seats", filter: `bus_id=eq.${activeId}` }, () => fetchSeats(activeId))
+        .on("postgres_changes", { event: "*", schema: "public", table: "seats", filter: `bus_id=eq.${activeId}` }, () => fetchSeats(activeId, true))
         .subscribe();
       return () => { supabase.removeChannel(channel); };
     }
@@ -132,6 +142,9 @@ export default function BusTabs() {
 
     if (error) {
       alert("Request failed: " + error.message);
+    } else {
+      // Immediate auto-refresh
+      if (activeId) fetchSeats(activeId, true);
     }
 
     setModalSeat(null);
@@ -155,7 +168,7 @@ export default function BusTabs() {
     if (error) {
       alert("Failed to update seat: " + error.message);
     } else {
-      if (activeId) fetchSeats(activeId);
+      if (activeId) fetchSeats(activeId, true);
     }
     
     setIsUpdating(false);
