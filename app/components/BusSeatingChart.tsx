@@ -25,6 +25,8 @@ export interface BusSeatingChartProps {
   busName?: string;
   rows: BusRow[];
   onSeatClick?: (seat: Seat) => void;
+  onAdminAction?: (seat: Seat, action: "approve" | "reject" | "remove") => void;
+  isAdmin?: boolean;
   isUpdating?: boolean;
 }
 
@@ -32,10 +34,14 @@ export interface BusSeatingChartProps {
 
 function SeatCell({ 
   seat, 
-  onSeatClick 
+  onSeatClick,
+  onAdminAction,
+  isAdmin
 }: { 
   seat: Seat | null | undefined;
   onSeatClick?: (seat: Seat) => void;
+  onAdminAction?: (seat: Seat, action: "approve" | "reject" | "remove") => void;
+  isAdmin?: boolean;
 }) {
   if (!seat) {
     return <td className="seat-cell seat-empty" />;
@@ -55,21 +61,51 @@ function SeatCell({
 
   return (
     <td 
-      className={`seat-cell ${statusClass}`}
-      onClick={() => isVacant && onSeatClick && onSeatClick(seat)}
+      className={`seat-cell ${statusClass} ${isAdmin ? "admin-cell" : ""}`}
+      onClick={() => !isAdmin && isVacant && onSeatClick && onSeatClick(seat)}
     >
-      <span className="seat-number">#{seat.seatNumber}</span>
-      <span className={`seat-name ${isVacant ? "vacant-label" : ""} ${isRequested ? "requested-label" : ""}`}>
-        {isOccupied && seat.passenger_name}
-        {isRequested && (
-          <span className="request-stack">
-             <span className="request-label-text">Requested by:</span>
-             <span className="request-name">{seat.requester_name}</span>
-          </span>
+      <div className="seat-cell-inner">
+        <span className="seat-number">#{seat.seatNumber}</span>
+        
+        {/* Admin Controls */}
+        {isAdmin && (
+          <div className="admin-actions">
+            {isRequested && (
+              <>
+                <button 
+                  className="admin-btn approve" 
+                  onClick={(e) => { e.stopPropagation(); onAdminAction?.(seat, "approve"); }}
+                  title="Approve Assignment"
+                >✓</button>
+                <button 
+                  className="admin-btn reject" 
+                  onClick={(e) => { e.stopPropagation(); onAdminAction?.(seat, "reject"); }}
+                  title="Reject Request"
+                >×</button>
+              </>
+            )}
+            {isOccupied && (
+              <button 
+                className="admin-btn remove" 
+                onClick={(e) => { e.stopPropagation(); onAdminAction?.(seat, "remove"); }}
+                title="Remove Passenger"
+              >🗑</button>
+            )}
+          </div>
         )}
-        {isVacant && "Vacant"}
-      </span>
-      {isVacant && <div className="click-to-request">Click to Request</div>}
+
+        <span className={`seat-name ${isVacant ? "vacant-label" : ""} ${isRequested ? "requested-label" : ""}`}>
+          {isOccupied && seat.passenger_name}
+          {isRequested && (
+            <span className="request-stack">
+               <span className="request-label-text">Requested by:</span>
+               <span className="request-name">{seat.requester_name}</span>
+            </span>
+          )}
+          {isVacant && "Vacant"}
+        </span>
+        {!isAdmin && isVacant && <div className="click-to-request">Click to Request</div>}
+      </div>
     </td>
   );
 }
@@ -80,6 +116,8 @@ export default function BusSeatingChart({
   busName = "Bus",
   rows,
   onSeatClick,
+  onAdminAction,
+  isAdmin = false,
   isUpdating = false,
 }: BusSeatingChartProps) {
   return (
@@ -136,15 +174,15 @@ export default function BusSeatingChart({
             {/* ── Passenger rows ── */}
             {rows.map((row, idx) => (
               <tr key={idx} className="passenger-row">
-                <SeatCell seat={row.leftWindow} onSeatClick={onSeatClick} />
-                <SeatCell seat={row.leftAisle} onSeatClick={onSeatClick} />
+                <SeatCell seat={row.leftWindow} onSeatClick={onSeatClick} onAdminAction={onAdminAction} isAdmin={isAdmin} />
+                <SeatCell seat={row.leftAisle} onSeatClick={onSeatClick} onAdminAction={onAdminAction} isAdmin={isAdmin} />
 
                 {/* Aisle column:
                     – back row: render the centre seat
                     – middle row: show vertical AISLE label
                     – all others: empty aisle gap               */}
                 {row.middleSeat ? (
-                  <SeatCell seat={row.middleSeat} onSeatClick={onSeatClick} />
+                  <SeatCell seat={row.middleSeat} onSeatClick={onSeatClick} onAdminAction={onAdminAction} isAdmin={isAdmin} />
                 ) : idx === Math.floor(rows.length / 2) ? (
                   <td className="aisle-cell aisle-label-cell">
                     <div className="aisle-text">
@@ -157,8 +195,8 @@ export default function BusSeatingChart({
                   <td className="aisle-cell" />
                 )}
 
-                <SeatCell seat={row.rightAisle} onSeatClick={onSeatClick} />
-                <SeatCell seat={row.rightWindow} onSeatClick={onSeatClick} />
+                <SeatCell seat={row.rightAisle} onSeatClick={onSeatClick} onAdminAction={onAdminAction} isAdmin={isAdmin} />
+                <SeatCell seat={row.rightWindow} onSeatClick={onSeatClick} onAdminAction={onAdminAction} isAdmin={isAdmin} />
               </tr>
             ))}
           </tbody>
