@@ -1,47 +1,48 @@
-/* ═══════════════════════════════════════
-   BusSeatingChart – component styles
-   ═══════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   BusSeatingChart – modernised component styles
+   ═══════════════════════════════════════════════════ */
 
-/* Outer wrapper – centres the card on the page */
+/* ── Outer wrapper ───────────────────────────────── */
 .bus-wrapper {
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  padding: 2rem 1rem;
-  min-height: 100vh;
-  background: #f3f4f6;
-  font-family: "Geist Sans", Arial, Helvetica, sans-serif;
+  font-family: "Geist Sans", "Inter", Arial, Helvetica, sans-serif;
 }
 
-/* Card */
+/* ── Card ────────────────────────────────────────── */
 .bus-container {
   background: #ffffff;
-  border: 2px solid #1e293b;
-  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
-  min-width: 560px;
-  max-width: 680px;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.04),
+    0 8px 32px rgba(0, 0, 0, 0.12);
   width: 100%;
+  max-width: 680px;
 }
 
-/* ── Title bar ────────────────────────── */
+/* ── Title bar ───────────────────────────────────── */
 .bus-title {
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   font-size: 1rem;
   font-weight: 700;
-  padding: 0.6rem 1rem;
-  border-bottom: 2px solid #1e293b;
-  background: #ffffff;
-  letter-spacing: 0.02em;
-  text-decoration: underline;
+  padding: 0.85rem 1.25rem;
+  background: linear-gradient(90deg, #1e40af 0%, #2563eb 100%);
+  color: #ffffff;
+  letter-spacing: 0.01em;
 }
 
 .bus-label {
-  font-weight: 700;
+  font-weight: 500;
+  opacity: 0.75;
+  font-size: 0.85rem;
 }
 
-/* ── Table shell ──────────────────────── */
+/* ── Table shell ─────────────────────────────────── */
 .bus-table {
   width: 100%;
   border-collapse: collapse;
@@ -53,62 +54,60 @@
 .col-left-aisle,
 .col-right-aisle,
 .col-right-window {
-  width: 24%;
+  width: 23.25%;
 }
 
 .col-aisle {
-  width: 8%;
+  width: 7%;
 }
 
-/* ── Generic cell ─────────────────────── */
+/* ── Generic cell border ─────────────────────────── */
 .bus-table td {
-  border: 1px solid #94a3b8;
+  border: 1px solid #e2e8f0;
   vertical-align: middle;
   padding: 0;
 }
 
-/* ── Special front-of-bus cells ──────── */
+/* ── Special front-of-bus cells ──────────────────── */
 .special-cell {
   height: 52px;
   text-align: center;
   vertical-align: middle;
-  padding: 0.4rem;
-  background: #f8fafc;
+  padding: 0.5rem;
 }
 
 .driver-seat {
-  font-weight: 700;
-  font-size: 0.85rem;
-  background: #e2e8f0;
+  background: #f0f9ff;
+  border-bottom: 2px solid #bae6fd !important;
 }
 
 .entrance-cell {
-  font-size: 0.8rem;
   background: #f0fdf4;
-  color: #166534;
+  color: #15803d;
 }
 
 .tour-guide-cell {
-  font-size: 0.8rem;
-  background: #eff6ff;
-  color: #1e40af;
+  background: #fefce8;
+  color: #854d0e;
 }
 
 .empty-front {
-  background: #f8fafc;
+  background: #fafafa;
 }
 
 .special-label {
   display: block;
-  font-weight: 600;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
-/* ── Aisle column ─────────────────────── */
+/* ── Aisle column ────────────────────────────────── */
 .aisle-cell {
-  background: #f1f5f9;
-  border-left: 2px solid #475569 !important;
-  border-right: 2px solid #475569 !important;
+  background: #f8fafc;
+  border-left: 2px solid #cbd5e1 !important;
+  border-right: 2px solid #cbd5e1 !important;
   text-align: center;
   vertical-align: middle;
 }
@@ -121,83 +120,96 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: #475569;
-  letter-spacing: 0.15em;
+  gap: 0;
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
+  line-height: 1.5;
 }
 
-.aisle-text span {
-  line-height: 1.2;
-}
-
-/* ── Passenger row ────────────────────── */
+/* ── Passenger row ───────────────────────────────── */
 .passenger-row {
-  height: 56px;
+  height: 58px;
 }
 
-/* ── Seat cells ───────────────────────── */
+.passenger-row:nth-child(even) .seat-occupied,
+.passenger-row:nth-child(even) .seat-vacant,
+.passenger-row:nth-child(even) .seat-empty {
+  background-color: #fafafa;
+}
+
+/* ── Seat cells ──────────────────────────────────── */
 .seat-cell {
-  padding: 0.35rem 0.5rem;
-  cursor: default;
+  padding: 0.4rem 0.6rem;
   transition: background 0.15s ease;
 }
 
-/* Cell with actual data */
 .seat-occupied {
   background: #ffffff;
 }
 
-/* Cell that is vacant (seat exists but no passenger) */
 .seat-vacant {
-  background: #fefce8;
+  background: #ffffff;
 }
 
-/* Empty — no seat object passed at all */
 .seat-empty {
-  background: #f8fafc;
+  background: #fafafa;
 }
 
+/* ── Seat number chip ────────────────────────────── */
 .seat-number {
-  display: block;
-  font-size: 0.62rem;
-  font-weight: 600;
-  color: #64748b;
-  margin-bottom: 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: #2563eb;
+  border-radius: 4px;
+  padding: 1px 5px;
+  margin-bottom: 3px;
   letter-spacing: 0.04em;
+  line-height: 1.4;
 }
 
+.seat-vacant .seat-number {
+  background: #94a3b8;
+}
+
+/* ── Passenger name ──────────────────────────────── */
 .seat-name {
   display: block;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 500;
   color: #0f172a;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1.3;
 }
 
 .vacant-label {
-  color: #94a3b8;
+  color: #cbd5e1;
   font-style: italic;
   font-weight: 400;
+  font-size: 0.75rem;
 }
 
-/* ── Hover highlight ──────────────────── */
+/* ── Hover states ────────────────────────────────── */
 .seat-occupied:hover {
-  background: #eff6ff;
+  background: #eff6ff !important;
 }
 
 .seat-vacant:hover {
-  background: #fef9c3;
+  background: #f8fafc !important;
 }
 
-/* ── Responsive ───────────────────────── */
+/* ── Responsive ──────────────────────────────────── */
 @media (max-width: 600px) {
   .bus-container {
-    min-width: unset;
+    border-radius: 12px;
   }
 
   .seat-name {
@@ -205,6 +217,6 @@
   }
 
   .special-label {
-    font-size: 0.7rem;
+    font-size: 0.68rem;
   }
 }

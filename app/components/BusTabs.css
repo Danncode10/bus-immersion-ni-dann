@@ -1,0 +1,146 @@
+/* ═══════════════════════════════════════════════════
+   BusTabs – page shell + modern tab navigation
+   ═══════════════════════════════════════════════════ */
+
+/* ── Page shell ─────────────────────────────────── */
+.page-shell {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #0f172a 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2.5rem 1rem 4rem;
+  font-family: "Geist Sans", "Inter", Arial, Helvetica, sans-serif;
+}
+
+/* ── Header ─────────────────────────────────────── */
+.page-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.page-header-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 999px;
+  padding: 0.25rem 0.85rem;
+  margin-bottom: 0.75rem;
+}
+
+.page-header-title {
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+  font-weight: 800;
+  color: #f1f5f9;
+  margin: 0 0 0.3rem;
+  letter-spacing: -0.02em;
+}
+
+.page-header-sub {
+  font-size: 0.88rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* ── Tab bar card ──────────────────────────────── */
+.tab-bar-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  padding: 0.35rem;
+  display: inline-flex;
+  gap: 0.25rem;
+  margin-bottom: 2rem;
+}
+
+/* ── Tab button ─────────────────────────────────── */
+.tab-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: 11px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.tab-btn:hover:not(.tab-btn--active) {
+  background: rgba(255, 255, 255, 0.06);
+  color: #cbd5e1;
+}
+
+.tab-btn--active {
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 2px 12px rgba(37, 99, 235, 0.45);
+}
+
+/* Stacked label inside each tab */
+.tab-btn-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  text-align: left;
+}
+
+.tab-eyebrow {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.65;
+  line-height: 1;
+}
+
+.tab-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* ── Tab panel ──────────────────────────────────── */
+.tab-panel {
+  width: 100%;
+  max-width: 720px;
+  animation: tab-fade-in 0.22s ease;
+}
+
+@keyframes tab-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Responsive ─────────────────────────────────── */
+@media (max-width: 560px) {
+  .tab-bar-card {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .tab-btn {
+    justify-content: center;
+  }
+}
