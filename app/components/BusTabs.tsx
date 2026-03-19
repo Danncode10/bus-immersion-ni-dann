@@ -169,6 +169,8 @@ export default function BusTabs() {
       alert("Failed to update seat: " + error.message);
     } else {
       if (activeId) fetchSeats(activeId, true);
+      // Sync the modal state with updated data to prevent stale-state overwrites
+      setAdminModalSeat(prev => prev ? { ...prev, ...updateData } : null);
     }
     
     setIsUpdating(false);

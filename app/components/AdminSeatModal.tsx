@@ -39,6 +39,7 @@ export default function AdminSeatModal({ seat, onClose, onUpdate }: AdminSeatMod
     const updatedNames = (seat.requester_names || []).filter(n => n !== nameToRemove);
     if (updatedNames.length === 0) {
       onUpdate({ status: "vacant", requester_names: [] });
+      onClose();
     } else {
       onUpdate({ 
         requester_names: updatedNames
