@@ -124,24 +124,34 @@ export default function BusTabs() {
     if (!modalSeat) return;
     setIsUpdating(true);
     
-    // Get existing names
-    const currentNames = modalSeat.requester_names || [];
+    // 1. Re-check the actual latest count from the current state (rows) to prevent race conditions
+    let latestSeat: Seat | null = null;
+    for (const row of rows) {
+      if (row.leftWindow?.id === modalSeat.id) latestSeat = row.leftWindow || null;
+      else if (row.leftAisle?.id === modalSeat.id) latestSeat = row.leftAisle || null;
+      else if (row.middleSeat?.id === modalSeat.id) latestSeat = row.middleSeat || null;
+      else if (row.rightAisle?.id === modalSeat.id) latestSeat = row.rightAisle || null;
+      else if (row.rightWindow?.id === modalSeat.id) latestSeat = row.rightWindow || null;
+      if (latestSeat) break;
+    }
+
+    const currentNames = latestSeat?.requester_names || [];
     
-    // 1. Limit Check: Total Requesters
+    // 2. Limit Check: Strictly 10 maximum
     if (currentNames.length >= 10) {
-      alert("This seat has reached the maximum of 10 requests.");
+      alert("O ano? di ka na maka spam no?");
       setIsUpdating(false);
       return;
     }
 
-    // 2. Duplicate Check
+    // 3. Duplicate Check
     if (currentNames.includes(name)) {
       alert("You have already requested this seat.");
       setIsUpdating(false);
       return;
     }
     
-    // 3. Name length check
+    // 4. Name length check
     const cleanName = name.trim().slice(0, 30);
     const updatedNames = [...currentNames, cleanName];
 

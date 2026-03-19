@@ -62,7 +62,7 @@ export default function SeatModal({ type: initialType, seatNumber, requesterName
 
             {requesterNames && requesterNames.length >= 10 && (
               <div className="limit-alert">
-                 This seat has reached its limit of 10 requests. Please choose another seat.
+                 O ano? di ka na maka spam no?
               </div>
             )}
 
@@ -92,10 +92,31 @@ export default function SeatModal({ type: initialType, seatNumber, requesterName
                 <p className="no-requesters">No requests yet.</p>
               )}
             </div>
-            <p className="info-note">Admistration will review these requests and assign the final passenger. You can still add your name to the request list below.</p>
+
+            {requesterNames && requesterNames.length >= 10 ? (
+              <div className="limit-alert">
+                O ano? di ka na maka spam no?
+              </div>
+            ) : (
+              <p className="info-note">Admistration will review these requests and assign the final passenger. You can still add your name to the request list below.</p>
+            )}
+
             <div className="modal-footer">
               <button type="button" className="btn-cancel" onClick={onClose}>Close</button>
-              <button type="button" className="btn-submit" onClick={() => setType("request")}>I want this seat too</button>
+              <button 
+                type="button" 
+                className={`btn-submit ${requesterNames && requesterNames.length >= 10 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                onClick={(e) => {
+                  if (requesterNames && requesterNames.length >= 10) {
+                    e.preventDefault();
+                    alert("O ano? di ka na maka spam no?");
+                  } else {
+                    setType("request");
+                  }
+                }}
+              >
+                I want this seat too
+              </button>
             </div>
           </div>
         )}
