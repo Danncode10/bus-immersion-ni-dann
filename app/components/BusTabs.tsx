@@ -6,6 +6,7 @@ import BusSeatingChart, { BusRow, Seat } from "./BusSeatingChart";
 import SeatModal from "./SeatModal";
 import AdminSeatModal from "./AdminSeatModal";
 import AdminVacantModal from "./AdminVacantModal";
+import AdminRenameModal from "./AdminRenameModal";
 import { supabase } from "../lib/supabase";
 import { Session } from "@supabase/supabase-js";
 import { ShieldCheck, RefreshCw, Github, Pencil } from "lucide-react";
@@ -31,6 +32,7 @@ export default function BusTabs() {
 
   // Admin Modal State
   const [adminModalSeat, setAdminModalSeat] = useState<Seat | null>(null);
+  const [showRenameModal, setShowRenameModal] = useState(false);
 
   // 1. Auth & Buses Fetch
   useEffect(() => {
@@ -198,22 +200,22 @@ export default function BusTabs() {
     setIsUpdating(false);
   };
 
-  const handleRenameBus = async () => {
-    const activeBusObj = buses.find(b => b.id === activeId);
-    if (!activeId || !activeBusObj) return;
-    
-    const newName = window.prompt(`Enter new name for this bus:`, activeBusObj.name);
-    if (!newName || newName.trim() === activeBusObj.name || newName.trim() === "") return;
-    
+  const handleRenameBus = () => {
+    setShowRenameModal(true);
+  };
+
+  const executeRenameBus = async (newName: string) => {
+    if (!activeId) return;
     setIsUpdating(true);
-    const { error } = await supabase.from("buses").update({ name: newName.trim() }).eq("id", activeId);
+    const { error } = await supabase.from("buses").update({ name: newName }).eq("id", activeId);
     
     if (error) {
       alert("Failed to rename bus: " + error.message);
     } else {
-      setBuses(buses.map(b => b.id === activeId ? { ...b, name: newName.trim() } : b));
+      setBuses(buses.map(b => b.id === activeId ? { ...b, name: newName } : b));
     }
     setIsUpdating(false);
+    setShowRenameModal(false);
   };
 
   const handleLogout = async () => {
@@ -331,6 +333,15 @@ export default function BusTabs() {
             onUpdate={handleAdminUpdate}
           />
         )
+      )}
+
+      {/* Admin Rename Modal */}
+      {showRenameModal && activeBus && (
+        <AdminRenameModal 
+          currentName={activeBus.name}
+          onClose={() => setShowRenameModal(false)}
+          onUpdate={executeRenameBus}
+        />
       )}
 
       <footer className="page-footer">
