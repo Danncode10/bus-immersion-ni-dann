@@ -211,7 +211,17 @@ export default function BusTabs() {
       </header>
 
       <nav className="tab-bar-card">
-        {buses.map((bus, idx) => (
+        {buses
+          .sort((a, b) => {
+            const order = ["BSIT 3C", "BSIT 3B and BSCS", "BSIT 3D and BSIS"];
+            const idxA = order.indexOf(a.name);
+            const idxB = order.indexOf(b.name);
+            
+            // If the database names haven't been updated yet, sort by default name
+            if (idxA === -1 || idxB === -1) return a.name.localeCompare(b.name);
+            return idxA - idxB;
+          })
+          .map((bus, idx) => (
           <button key={bus.id} className={`tab-btn ${bus.id === activeId ? "tab-btn--active" : ""}`} onClick={() => setActiveId(bus.id)}>
             <span className="tab-btn-inner">
               <span className="tab-eyebrow">Bus {idx + 1}</span>
@@ -269,6 +279,18 @@ export default function BusTabs() {
           />
         )
       )}
+
+      <footer className="page-footer">
+        <span className="footer-text">build by </span>
+        <a 
+          href="https://www.instagram.com/dann.builds?igsh=MXc1OHM5ZXZ3Nm01OQ%3D%3D&utm_source=qr" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="footer-link"
+        >
+          @dann.builds
+        </a>
+      </footer>
     </div>
   );
 }

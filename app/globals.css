@@ -1,5 +1,19 @@
 @import "tailwindcss";
 
+/* ── Hide Next JS Dev Badge & Overlays ── */
+#nextjs-portal,
+[data-nextjs-toast-wrapper],
+[data-next-prerender-indicator],
+.__next-prerender-indicator,
+nextjs-portal,
+div[id^="__next-prerender-indicator"],
+div[class^="__next-prerender-indicator"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
