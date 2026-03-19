@@ -11,9 +11,10 @@ export interface Seat {
 }
 
 export interface BusRow {
-  leftWindow?: Seat | null; // leftmost column
-  leftAisle?: Seat | null; // second column from left
-  rightAisle?: Seat | null; // first column right of aisle
+  leftWindow?: Seat | null;  // leftmost column
+  leftAisle?: Seat | null;   // second column from left
+  middleSeat?: Seat | null;  // back-center seat (aisle col) – last row only
+  rightAisle?: Seat | null;  // first column right of aisle
   rightWindow?: Seat | null; // rightmost column
 }
 
@@ -98,8 +99,13 @@ export default function BusSeatingChart({
                 <SeatCell seat={row.leftWindow} />
                 <SeatCell seat={row.leftAisle} />
 
-                {/* Aisle column – only label on the middle row */}
-                {idx === Math.floor(rows.length / 2) ? (
+                {/* Aisle column:
+                    – back row: render the centre seat
+                    – middle row: show vertical AISLE label
+                    – all others: empty aisle gap               */}
+                {row.middleSeat ? (
+                  <SeatCell seat={row.middleSeat} />
+                ) : idx === Math.floor(rows.length / 2) ? (
                   <td className="aisle-cell aisle-label-cell">
                     <div className="aisle-text">
                       {"AISLE".split("").map((ch, i) => (

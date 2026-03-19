@@ -6,15 +6,22 @@ export interface BusConfig {
   rows: BusRow[];
 }
 
-/** Generate n blank rows with auto‑incrementing seat numbers. */
+/** Generate n blank rows with auto-incrementing seat numbers.
+ *  The very last row also gets a back-centre (middle/aisle) seat.
+ */
 function blankRows(totalRows: number): BusRow[] {
   return Array.from({ length: totalRows }, (_, i) => {
     const base = i * 4;
+    const isLastRow = i === totalRows - 1;
     return {
-      leftWindow: { seatNumber: base + 1 },
-      leftAisle: { seatNumber: base + 2 },
-      rightAisle: { seatNumber: base + 3 },
-      rightWindow: { seatNumber: base + 4 },
+      leftWindow:  { seatNumber: base + 1 },
+      leftAisle:   { seatNumber: base + 2 },
+      // seat #(base+3) lives in the aisle column on the last row only
+      ...(isLastRow
+        ? { middleSeat: { seatNumber: base + 3 } }
+        : {}),
+      rightAisle:  { seatNumber: isLastRow ? base + 4 : base + 3 },
+      rightWindow: { seatNumber: isLastRow ? base + 5 : base + 4 },
     };
   });
 }
