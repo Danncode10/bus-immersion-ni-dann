@@ -5,6 +5,8 @@ import "./BusTabs.css";
 import BusSeatingChart, { BusRow, Seat } from "./BusSeatingChart";
 import { supabase } from "../lib/supabase";
 import { Session } from "@supabase/supabase-js";
+import { ShieldCheck } from "lucide-react";
+import Link from "next/link";
 
 interface Bus {
   id: string;
@@ -112,16 +114,10 @@ export default function BusTabs() {
     setIsUpdating(false);
   };
 
-  const handleLogin = async () => {
-    const email = window.prompt("Admin Email:");
-    const password = window.prompt("Admin Password:");
-    if (email && password) {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) alert("Login failed: " + error.message);
-    }
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.reload(); // Hard refresh to clear all states
   };
-
-  const handleLogout = () => supabase.auth.signOut();
 
   if (loading) return <div className="page-shell"><div className="spinner"></div><p>Wait a moment...</p></div>;
 
@@ -132,11 +128,15 @@ export default function BusTabs() {
       <div className="admin-status-bar">
         {session ? (
           <div className="admin-chip">
-            <span className="dot active"></span> Admin Mode: {session.user.email}
-            <button onClick={handleLogout} className="logout-link">Logout</button>
+            <span className="dot active"></span>
+            Management Mode: {session.user.email}
+            <button onClick={handleLogout} className="logout-link">Sign Out</button>
           </div>
         ) : (
-          <button onClick={handleLogin} className="login-trigger">Admin Login</button>
+          <Link href="/login" className="login-pill">
+            <ShieldCheck className="w-3.5 h-3.5" />
+            Admin Portal
+          </Link>
         )}
       </div>
 
