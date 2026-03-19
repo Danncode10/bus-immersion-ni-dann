@@ -86,16 +86,13 @@
   table-layout: fixed;
 }
 
-/* Column widths */
+/* Column widths - Equalized for uniform seat sizes */
 .col-left-window,
 .col-left-aisle,
+.col-aisle,
 .col-right-aisle,
 .col-right-window {
-  width: 23.25%;
-}
-
-.col-aisle {
-  width: 7%;
+  width: 20%;
 }
 
 /* ── Generic cell border ─────────────────────────── */
