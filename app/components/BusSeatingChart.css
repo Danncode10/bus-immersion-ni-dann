@@ -113,6 +113,7 @@
 .driver-seat {
   background: #f0f9ff;
   border-bottom: 2px solid #bae6fd !important;
+  color: #000000;
 }
 
 .entrance-cell {
