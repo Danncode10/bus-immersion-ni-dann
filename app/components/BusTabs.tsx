@@ -126,12 +126,24 @@ export default function BusTabs() {
     
     // Get existing names
     const currentNames = modalSeat.requester_names || [];
+    
+    // 1. Limit Check: Total Requesters
+    if (currentNames.length >= 10) {
+      alert("This seat has reached the maximum of 10 requests.");
+      setIsUpdating(false);
+      return;
+    }
+
+    // 2. Duplicate Check
     if (currentNames.includes(name)) {
       alert("You have already requested this seat.");
       setIsUpdating(false);
       return;
     }
-    const updatedNames = [...currentNames, name];
+    
+    // 3. Name length check
+    const cleanName = name.trim().slice(0, 30);
+    const updatedNames = [...currentNames, cleanName];
 
     const { error } = await supabase.from("seats")
       .update({ 

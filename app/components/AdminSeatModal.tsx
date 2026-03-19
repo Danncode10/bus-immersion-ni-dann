@@ -126,8 +126,10 @@ export default function AdminSeatModal({ seat, onClose, onUpdate }: AdminSeatMod
                   value={passengerName}
                   onChange={(e) => setPassengerName(e.target.value)}
                   className="modal-input"
+                  maxLength={30}
                 />
               </div>
+              <p className="input-helper">{passengerName.length}/30</p>
               <button type="submit" className="btn-save" disabled={!passengerName.trim()}>
                 {seat.status === "occupied" ? "Update Name" : "Assign Directly"}
               </button>

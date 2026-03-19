@@ -55,8 +55,10 @@ export default function AdminVacantModal({ seat, onClose, onUpdate }: AdminVacan
                   value={passengerName}
                   onChange={(e) => setPassengerName(e.target.value)}
                   className="modal-input"
+                  maxLength={30}
                 />
               </div>
+              <p className="input-helper">{passengerName.length}/30 characters</p>
               <p className="helper-text">This will immediately mark the seat as occupied.</p>
               <button type="submit" className="btn-action approve-full mt-4" disabled={!passengerName.trim()}>
                 <Check size={18} /> Confirm Assignment

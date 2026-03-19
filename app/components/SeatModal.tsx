@@ -54,12 +54,27 @@ export default function SeatModal({ type: initialType, seatNumber, requesterName
                   onChange={(e) => setName(e.target.value)}
                   className="modal-input"
                   required
+                  maxLength={30}
                 />
               </div>
+              <p className="input-helper">{name.length}/30 characters</p>
             </div>
+
+            {requesterNames && requesterNames.length >= 10 && (
+              <div className="limit-alert">
+                 This seat has reached its limit of 10 requests. Please choose another seat.
+              </div>
+            )}
+
             <div className="modal-footer">
               <button type="button" className="btn-cancel" onClick={onClose}>Cancel</button>
-              <button type="submit" className="btn-submit" disabled={!name.trim()}>Send Request</button>
+              <button 
+                type="submit" 
+                className="btn-submit" 
+                disabled={!name.trim() || (requesterNames && requesterNames.length >= 10)}
+              >
+                Send Request
+              </button>
             </div>
           </form>
         ) : (
