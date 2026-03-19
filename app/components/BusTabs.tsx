@@ -15,6 +15,7 @@ import Link from "next/link";
 interface Bus {
   id: string;
   name: string;
+  bus_number?: number;
 }
 
 export default function BusTabs() {
@@ -255,6 +256,11 @@ export default function BusTabs() {
       <nav className="tab-bar-card">
         {buses
           .sort((a, b) => {
+            // Sort by explicit bus_number if available (e.g. from the new Supabase column)
+            if (a.bus_number != null && b.bus_number != null) {
+              return a.bus_number - b.bus_number;
+            }
+            // Fallback: legacy sorting logic
             const order = ["BSIT 3C", "BSIT 3B and BSCS", "BSIT 3D and BSIS"];
             const idxA = order.indexOf(a.name);
             const idxB = order.indexOf(b.name);
@@ -266,7 +272,7 @@ export default function BusTabs() {
           .map((bus, idx) => (
           <button key={bus.id} className={`tab-btn ${bus.id === activeId ? "tab-btn--active" : ""}`} onClick={() => setActiveId(bus.id)}>
             <span className="tab-btn-inner">
-              <span className="tab-eyebrow">Bus {idx + 1}</span>
+              <span className="tab-eyebrow">Bus {bus.bus_number ?? idx + 1}</span>
               <span className="tab-name">{bus.name}</span>
             </span>
           </button>
