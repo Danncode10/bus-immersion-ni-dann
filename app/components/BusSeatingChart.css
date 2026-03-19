@@ -1,0 +1,210 @@
+/* ═══════════════════════════════════════
+   BusSeatingChart – component styles
+   ═══════════════════════════════════════ */
+
+/* Outer wrapper – centres the card on the page */
+.bus-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem 1rem;
+  min-height: 100vh;
+  background: #f3f4f6;
+  font-family: "Geist Sans", Arial, Helvetica, sans-serif;
+}
+
+/* Card */
+.bus-container {
+  background: #ffffff;
+  border: 2px solid #1e293b;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+  min-width: 560px;
+  max-width: 680px;
+  width: 100%;
+}
+
+/* ── Title bar ────────────────────────── */
+.bus-title {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 0.6rem 1rem;
+  border-bottom: 2px solid #1e293b;
+  background: #ffffff;
+  letter-spacing: 0.02em;
+  text-decoration: underline;
+}
+
+.bus-label {
+  font-weight: 700;
+}
+
+/* ── Table shell ──────────────────────── */
+.bus-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+/* Column widths */
+.col-left-window,
+.col-left-aisle,
+.col-right-aisle,
+.col-right-window {
+  width: 24%;
+}
+
+.col-aisle {
+  width: 8%;
+}
+
+/* ── Generic cell ─────────────────────── */
+.bus-table td {
+  border: 1px solid #94a3b8;
+  vertical-align: middle;
+  padding: 0;
+}
+
+/* ── Special front-of-bus cells ──────── */
+.special-cell {
+  height: 52px;
+  text-align: center;
+  vertical-align: middle;
+  padding: 0.4rem;
+  background: #f8fafc;
+}
+
+.driver-seat {
+  font-weight: 700;
+  font-size: 0.85rem;
+  background: #e2e8f0;
+}
+
+.entrance-cell {
+  font-size: 0.8rem;
+  background: #f0fdf4;
+  color: #166534;
+}
+
+.tour-guide-cell {
+  font-size: 0.8rem;
+  background: #eff6ff;
+  color: #1e40af;
+}
+
+.empty-front {
+  background: #f8fafc;
+}
+
+.special-label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+/* ── Aisle column ─────────────────────── */
+.aisle-cell {
+  background: #f1f5f9;
+  border-left: 2px solid #475569 !important;
+  border-right: 2px solid #475569 !important;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.aisle-label-cell {
+  padding: 0.5rem 0;
+}
+
+.aisle-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #475569;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.aisle-text span {
+  line-height: 1.2;
+}
+
+/* ── Passenger row ────────────────────── */
+.passenger-row {
+  height: 56px;
+}
+
+/* ── Seat cells ───────────────────────── */
+.seat-cell {
+  padding: 0.35rem 0.5rem;
+  cursor: default;
+  transition: background 0.15s ease;
+}
+
+/* Cell with actual data */
+.seat-occupied {
+  background: #ffffff;
+}
+
+/* Cell that is vacant (seat exists but no passenger) */
+.seat-vacant {
+  background: #fefce8;
+}
+
+/* Empty — no seat object passed at all */
+.seat-empty {
+  background: #f8fafc;
+}
+
+.seat-number {
+  display: block;
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 2px;
+  letter-spacing: 0.04em;
+}
+
+.seat-name {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vacant-label {
+  color: #94a3b8;
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* ── Hover highlight ──────────────────── */
+.seat-occupied:hover {
+  background: #eff6ff;
+}
+
+.seat-vacant:hover {
+  background: #fef9c3;
+}
+
+/* ── Responsive ───────────────────────── */
+@media (max-width: 600px) {
+  .bus-container {
+    min-width: unset;
+  }
+
+  .seat-name {
+    font-size: 0.7rem;
+  }
+
+  .special-label {
+    font-size: 0.7rem;
+  }
+}
