@@ -17,6 +17,7 @@ export default function AdminSeatModal({ seat, onClose, onUpdate }: AdminSeatMod
   const [isBusy, setIsBusy] = useState(false);
   const [showRequests, setShowRequests] = useState(false);
   const [showConfirmVacate, setShowConfirmVacate] = useState(false);
+  const [newRequestName, setNewRequestName] = useState("");
 
   // Local state for drag-and-drop
   const [requesterList, setRequesterList] = useState<string[]>(seat.requester_names || []);
@@ -42,6 +43,20 @@ export default function AdminSeatModal({ seat, onClose, onUpdate }: AdminSeatMod
     onUpdate({ requester_names: newList });
   };
 
+  const handleAddRequest = (e: React.FormEvent) => {
+    e.preventDefault();
+    const name = newRequestName.trim();
+    if (name && !requesterList.includes(name) && requesterList.length < 10) {
+      const newList = [...requesterList, name];
+      setRequesterList(newList);
+      setNewRequestName("");
+      // Add to list and ensure status becomes requested if it was previously vacant
+      onUpdate({ 
+        status: seat.status === "vacant" ? "requested" : seat.status, 
+        requester_names: newList 
+      });
+    }
+  };
 
   const handleApprove = (name: string) => {
     onUpdate({ 
@@ -95,67 +110,89 @@ export default function AdminSeatModal({ seat, onClose, onUpdate }: AdminSeatMod
         </div>
 
         <div className="modal-body">
-          {/* Section 1: Request Pending */}
-          {seat.status === "requested" && (
-            <div className="admin-section">
-               <label className="section-label">Pending Requests</label>
-               
-               {!showRequests ? (
-                  <button className="btn-view-requests" onClick={() => setShowRequests(true)}>
-                    <span>View Name Requests</span>
-                    <span className="count-tag">{seat.requester_names?.length || 0}</span>
-                  </button>
-               ) : (
-                  <div className="admin-request-list">
-                    <p className="helper-text mb-2" style={{ fontSize: "0.75rem", opacity: 0.8 }}>Use the up/down arrows to reorder. The top person is prioritized.</p>
-                    {requesterList.map((name, idx) => (
-                      <div 
-                        key={`${name}-${idx}`} 
-                        className="admin-request-item"
-                      >
-                        <div className="admin-request-info">
-                          <User size={16} />
-                          <span>{name}</span>
-                        </div>
-                        <div className="admin-request-actions">
-                          <button 
-                            className="btn-mini-action move-btn" 
-                            title="Move Up"
-                            onClick={() => handleMoveUp(idx)}
-                            disabled={idx === 0}
-                          >
-                            <ArrowUp size={16} />
-                          </button>
-                          <button 
-                            className="btn-mini-action move-btn" 
-                            title="Move Down"
-                            onClick={() => handleMoveDown(idx)}
-                            disabled={idx === requesterList.length - 1}
-                          >
-                            <ArrowDown size={16} />
-                          </button>
-                          <button 
-                            className="btn-mini-action approve" 
-                            title="Approve"
-                            onClick={() => handleApprove(name)}
-                          >
-                            <CheckCircle size={16} />
-                          </button>
-                          <button 
-                            className="btn-mini-action remove" 
-                            title="Remove"
-                            onClick={() => handleRemoveRequest(name)}
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
+          {/* Section 1: Request Pending / Waitlist */}
+          <div className="admin-section">
+             <label className="section-label">Request List</label>
+             
+             {!showRequests ? (
+                <button className="btn-view-requests" onClick={() => setShowRequests(true)}>
+                  <span>View & Edit Name Requests</span>
+                  <span className="count-tag">{requesterList.length}</span>
+                </button>
+             ) : (
+                <div className="admin-request-list">
+                  <p className="helper-text mb-2" style={{ fontSize: "0.75rem", opacity: 0.8 }}>Use the up/down arrows to reorder. The top person is prioritized.</p>
+                  
+                  {requesterList.length === 0 && <p className="helper-text mt-2 mb-2">No requests currently.</p>}
+                  
+                  {requesterList.map((name, idx) => (
+                    <div 
+                      key={`${name}-${idx}`} 
+                      className="admin-request-item"
+                    >
+                      <div className="admin-request-info">
+                        <User size={16} />
+                        <span>{name}</span>
                       </div>
-                    ))}
-                    <button className="btn-save mt-2" onClick={() => setShowRequests(false)}>Hide List</button>
+                      <div className="admin-request-actions">
+                        <button 
+                          className="btn-mini-action move-btn" 
+                          title="Move Up"
+                          onClick={() => handleMoveUp(idx)}
+                          disabled={idx === 0}
+                        >
+                          <ArrowUp size={16} />
+                        </button>
+                        <button 
+                          className="btn-mini-action move-btn" 
+                          title="Move Down"
+                          onClick={() => handleMoveDown(idx)}
+                          disabled={idx === requesterList.length - 1}
+                        >
+                          <ArrowDown size={16} />
+                        </button>
+                        <button 
+                          className="btn-mini-action approve" 
+                          title="Approve"
+                          onClick={() => handleApprove(name)}
+                        >
+                          <CheckCircle size={16} />
+                        </button>
+                        <button 
+                          className="btn-mini-action remove" 
+                          title="Remove"
+                          onClick={() => handleRemoveRequest(name)}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+
+                  <div style={{ marginTop: "1rem", borderTop: "1px solid #e2e8f0", paddingTop: "0.75rem" }}>
+                    <label className="section-label mb-2" style={{ display: "block", color: "#64748b" }}>Add Name to List</label>
+                    <form onSubmit={handleAddRequest} className="manual-form">
+                      <div className="input-wrapper">
+                        <UserPlus size={18} className="input-icon" style={{ color: "#94a3b8" }}/>
+                        <input 
+                          type="text" 
+                          placeholder="Type new requester name..." 
+                          value={newRequestName}
+                          onChange={(e) => setNewRequestName(e.target.value)}
+                          className="modal-input"
+                          maxLength={30}
+                        />
+                      </div>
+                      <button type="submit" className="btn-save" disabled={!newRequestName.trim() || requesterList.length >= 10}>
+                        Add
+                      </button>
+                    </form>
                   </div>
-               )}
-            </div>
-          )}
+
+                  <button className="btn-save mt-3" style={{ width: "100%", justifyContent: "center", display: "flex", height: "3rem", alignItems: "center", background: "#f1f5f9", color: "#475569" }} onClick={() => setShowRequests(false)}>Close List</button>
+                </div>
+             )}
+          </div>
 
           {/* Section 2: Edit / Manual Assign */}
           <div className="admin-section">
