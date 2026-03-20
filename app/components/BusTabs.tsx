@@ -7,6 +7,7 @@ import SeatModal from "./SeatModal";
 import AdminSeatModal from "./AdminSeatModal";
 import AdminVacantModal from "./AdminVacantModal";
 import AdminRenameModal from "./AdminRenameModal";
+import ApprovedSeatModal from "./ApprovedSeatModal";
 import { supabase } from "../lib/supabase";
 import { Session } from "@supabase/supabase-js";
 import { ShieldCheck, RefreshCw, Github, Pencil } from "lucide-react";
@@ -29,7 +30,7 @@ export default function BusTabs() {
 
   // User Modal State
   const [modalSeat, setModalSeat] = useState<Seat | null>(null);
-  const [modalType, setModalType] = useState<"request" | "view" | null>(null);
+  const [modalType, setModalType] = useState<"request" | "view" | "approved" | null>(null);
 
   // Admin Modal State
   const [adminModalSeat, setAdminModalSeat] = useState<Seat | null>(null);
@@ -119,8 +120,8 @@ export default function BusTabs() {
   const handleSeatClick = (seat: Seat) => {
     if (session) return; 
     setModalSeat(seat);
-    // If vacant, direct request. If requested, view list first but can also request.
-    setModalType(seat.status === "vacant" ? "request" : "view");
+    // Vacant -> Request form, Occupied -> Approved Modal, Requested -> View Waitlist
+    setModalType(seat.status === "vacant" ? "request" : seat.status === "occupied" ? "approved" : "view");
   };
 
   const handleModalSubmit = async (name: string) => {
@@ -315,13 +316,21 @@ export default function BusTabs() {
 
       {/* Modern Modal System (User) */}
       {modalSeat && modalType && (
-        <SeatModal 
-          type={modalType}
-          seatNumber={modalSeat.seatNumber}
-          requesterNames={modalSeat.requester_names}
-          onClose={() => { setModalSeat(null); setModalType(null); }}
-          onSubmit={handleModalSubmit}
-        />
+        modalType === "approved" ? (
+          <ApprovedSeatModal 
+            seatNumber={modalSeat.seatNumber}
+            passengerName={modalSeat.passenger_name || ""}
+            onClose={() => { setModalSeat(null); setModalType(null); }}
+          />
+        ) : (
+          <SeatModal 
+            type={modalType as "request" | "view"}
+            seatNumber={modalSeat.seatNumber}
+            requesterNames={modalSeat.requester_names}
+            onClose={() => { setModalSeat(null); setModalType(null); }}
+            onSubmit={handleModalSubmit}
+          />
+        )
       )}
 
       {/* Unified Management System (Admin) */}

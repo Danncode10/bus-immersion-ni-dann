@@ -68,7 +68,7 @@ function SeatCell({
           onAdminEdit?.(seat);
           return;
         }
-        if (isVacant || isRequested) onSeatClick?.(seat);
+        onSeatClick?.(seat);
       }}
     >
       <div className="seat-cell-inner">
