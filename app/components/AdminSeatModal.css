@@ -214,6 +214,22 @@
   transition: all 0.2s;
 }
 
+.btn-mini-action.move-btn {
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+}
+
+.btn-mini-action.move-btn:hover:not(:disabled) {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.btn-mini-action.move-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
 .btn-mini-action.approve {
   background: #dcfce7;
   color: #16a34a;

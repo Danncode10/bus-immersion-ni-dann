@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, UserPlus, Trash2, CheckCircle, Edit3, User } from "lucide-react";
+import { X, UserPlus, Trash2, CheckCircle, Edit3, User, ArrowUp, ArrowDown } from "lucide-react";
 import "./AdminSeatModal.css";
 
 import { Seat } from "./BusSeatingChart";
@@ -18,9 +18,30 @@ export default function AdminSeatModal({ seat, onClose, onUpdate }: AdminSeatMod
   const [showRequests, setShowRequests] = useState(false);
   const [showConfirmVacate, setShowConfirmVacate] = useState(false);
 
+  // Local state for drag-and-drop
+  const [requesterList, setRequesterList] = useState<string[]>(seat.requester_names || []);
+
   useEffect(() => {
     setPassengerName(seat.passenger_name || "");
+    setRequesterList(seat.requester_names || []);
   }, [seat]);
+
+  const handleMoveUp = (idx: number) => {
+    if (idx === 0) return;
+    const newList = [...requesterList];
+    [newList[idx - 1], newList[idx]] = [newList[idx], newList[idx - 1]];
+    setRequesterList(newList);
+    onUpdate({ requester_names: newList });
+  };
+
+  const handleMoveDown = (idx: number) => {
+    if (idx === requesterList.length - 1) return;
+    const newList = [...requesterList];
+    [newList[idx + 1], newList[idx]] = [newList[idx], newList[idx + 1]];
+    setRequesterList(newList);
+    onUpdate({ requester_names: newList });
+  };
+
 
   const handleApprove = (name: string) => {
     onUpdate({ 
@@ -32,11 +53,13 @@ export default function AdminSeatModal({ seat, onClose, onUpdate }: AdminSeatMod
   };
 
   const handleRemoveRequest = (nameToRemove: string) => {
-    const updatedNames = (seat.requester_names || []).filter(n => n !== nameToRemove);
+    const updatedNames = requesterList.filter(n => n !== nameToRemove);
     if (updatedNames.length === 0) {
       onUpdate({ status: "vacant", requester_names: [] });
       onClose();
     } else {
+      // Local list gets updated automatically by the useEffect listening to the seat prop, 
+      // but we update the DB here
       onUpdate({ 
         requester_names: updatedNames
       });
@@ -84,13 +107,33 @@ export default function AdminSeatModal({ seat, onClose, onUpdate }: AdminSeatMod
                   </button>
                ) : (
                   <div className="admin-request-list">
-                    {seat.requester_names?.map((name, idx) => (
-                      <div key={idx} className="admin-request-item">
+                    <p className="helper-text mb-2" style={{ fontSize: "0.75rem", opacity: 0.8 }}>Use the up/down arrows to reorder. The top person is prioritized.</p>
+                    {requesterList.map((name, idx) => (
+                      <div 
+                        key={`${name}-${idx}`} 
+                        className="admin-request-item"
+                      >
                         <div className="admin-request-info">
                           <User size={16} />
                           <span>{name}</span>
                         </div>
                         <div className="admin-request-actions">
+                          <button 
+                            className="btn-mini-action move-btn" 
+                            title="Move Up"
+                            onClick={() => handleMoveUp(idx)}
+                            disabled={idx === 0}
+                          >
+                            <ArrowUp size={16} />
+                          </button>
+                          <button 
+                            className="btn-mini-action move-btn" 
+                            title="Move Down"
+                            onClick={() => handleMoveDown(idx)}
+                            disabled={idx === requesterList.length - 1}
+                          >
+                            <ArrowDown size={16} />
+                          </button>
                           <button 
                             className="btn-mini-action approve" 
                             title="Approve"
